@@ -1,3 +1,6 @@
+const ANSI_CLEAR_CONSOLE: &str = "\x1b[2J";
+const ANSI_CURSOR_TO_START: &str = "\x1b[1;1H";
+
 fn main() {
     let mut world: Vec<Vec<u8>> = vec![
         vec![0, 0, 0, 0, 1],
@@ -15,11 +18,15 @@ fn main() {
         buffer.push(vec![0; cols]);
     }
 
-    do_step(&mut world, &mut buffer, rows, cols);
-
-    for row in buffer {
-        println!("{:?}", row);
+    for _ in 0..3 {
+        reset_console();
+        print_world(&world);
+        do_step(&mut world, &mut buffer, rows, cols);
+        (world, buffer) = (buffer, world);
+        std::thread::sleep(std::time::Duration::from_secs(5));
     }
+
+    reset_console();
 }
 
 fn do_step(current_world: &Vec<Vec<u8>>, next_world: &mut Vec<Vec<u8>>, rows: usize, cols: usize) {
@@ -61,5 +68,22 @@ fn get_new_status(is_alive: bool, neighbors_alive: u8) -> u8 {
         (false, 3) => 1,
         (_, n @ 9..) => panic!("Invalid number of alive neighbors: {n}"), 
         _ => 0,
+    }
+}
+
+fn reset_console() {
+    print!("{ANSI_CLEAR_CONSOLE}{ANSI_CURSOR_TO_START}");
+}
+
+fn print_world(world: &Vec<Vec<u8>>) {
+    for row in world.iter() {
+        for cell in row {
+            print!("{} ", match cell {
+                0 => " ",
+                1 => "■",
+                n => panic!("Invalid cell value: {}", n),
+            });
+        }
+        println!();
     }
 }
