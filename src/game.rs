@@ -1,6 +1,6 @@
 pub fn do_step(
-    current_world: &Vec<Vec<u8>>,
-    next_world: &mut Vec<Vec<u8>>,
+    current_world: &[Vec<u8>],
+    next_world: &mut [Vec<u8>],
     rows: usize,
     cols: usize,
 ) {
@@ -14,7 +14,7 @@ pub fn do_step(
     }
 }
 
-fn count_alive_neighbors(world: &Vec<Vec<u8>>, x: usize, y: usize, rows: usize, cols: usize) -> u8 {
+fn count_alive_neighbors(world: &[Vec<u8>], x: usize, y: usize, rows: usize, cols: usize) -> u8 {
     let mut n_alive = 0;
     for (x, y) in get_neighbor_indices(x, y, rows, cols).iter() {
         n_alive += world[*y][*x];

@@ -7,7 +7,7 @@ pub fn reset_console() {
     print!("{ANSI_CLEAR_CONSOLE}{ANSI_CURSOR_TO_START}");
 }
 
-pub fn print_world(world: &Vec<Vec<u8>>) {
+pub fn print_world(world: &[Vec<u8>]) {
     for row in world.iter() {
         for cell in row {
             print!(
