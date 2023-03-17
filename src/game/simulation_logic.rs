@@ -1,26 +1,28 @@
-pub fn do_step(current_world: &[Vec<u8>], next_world: &mut [Vec<u8>], rows: usize, cols: usize) {
+use super::Game;
+
+pub fn do_step(game: &mut Game) {
     // todo: optimize maybe by storing the number of alive neighbors that are still neighbors of the next cell
-    for y in 0..rows {
-        for x in 0..cols {
-            let is_alive = current_world[y][x] == 1;
-            let neighbors_alive = count_alive_neighbors(current_world, x, y, rows, cols);
-            next_world[y][x] = get_new_status(is_alive, neighbors_alive);
+    for y in 0..game.rows() {
+        for x in 0..game.cols() {
+            let is_alive = game.world[y][x] == 1;
+            let neighbors_alive = count_alive_neighbors(game, x, y);
+            game.buffer[y][x] = get_new_status(is_alive, neighbors_alive);
         }
     }
 }
 
-fn count_alive_neighbors(world: &[Vec<u8>], x: usize, y: usize, rows: usize, cols: usize) -> u8 {
+fn count_alive_neighbors(game: &Game, x: usize, y: usize) -> u8 {
     let mut n_alive = 0;
-    for (x, y) in get_neighbor_indices(x, y, rows, cols).iter() {
-        n_alive += world[*y][*x];
+    for (x, y) in get_neighbor_indices(game, x, y).iter() {
+        n_alive += game.world[*y][*x];
     }
 
     n_alive
 }
 
-fn get_neighbor_indices(x: usize, y: usize, rows: usize, cols: usize) -> [(usize, usize); 8] {
-    let x = x + cols;
-    let y = y + rows;
+fn get_neighbor_indices(game: &Game, x: usize, y: usize) -> [(usize, usize); 8] {
+    let x = x + game.cols();
+    let y = y + game.rows();
 
     let indices = [
         (x - 1, y - 1),
@@ -33,7 +35,7 @@ fn get_neighbor_indices(x: usize, y: usize, rows: usize, cols: usize) -> [(usize
         (x + 1, y + 1),
     ];
 
-    indices.map(|(x, y)| (x % cols, y % rows))
+    indices.map(|(x, y)| (x % game.cols(), y % game.rows()))
 }
 
 fn get_new_status(is_alive: bool, neighbors_alive: u8) -> u8 {
