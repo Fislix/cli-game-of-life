@@ -47,4 +47,8 @@ pub struct Cli {
     /// How many simulation steps the game should run for
     #[arg(long)]
     pub steps: Option<u32>,
+
+    /// How many steps per second should (tried to) be computed
+    #[arg(short, long = "speed", default_value_t = 2)]
+    pub steps_per_second: u32,
 }

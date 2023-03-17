@@ -69,14 +69,28 @@ pub fn get_stop_condition(seconds: Option<u32>, steps: Option<u32>) -> Box<dyn F
     }
 }
 
-pub fn run(game: &mut Game, should_stop: Box<dyn Fn(u32) -> bool>) {
+pub fn run(game: &mut Game, should_stop: Box<dyn Fn(u32) -> bool>, steps_per_second: u32) {
     let mut steps: u32 = 0;
+
+    let time_step = Duration::from_secs_f64(1.0 / steps_per_second as f64);
+    let mut t0 = Instant::now();
+
     while !should_stop(steps) {
         reset_console();
         print_world(&game.world);
         do_step(game);
         game.swap_world_and_buffer();
-        std::thread::sleep(std::time::Duration::from_secs_f64(0.5));
+
         steps += 1;
+        enforce_speed(&mut t0, time_step);
     }
+}
+
+fn enforce_speed(t0: &mut Instant, time_step: Duration) {
+    let t1 = Instant::now();
+    let delta_t = t1 - *t0;
+    if delta_t < time_step {
+        std::thread::sleep(time_step - delta_t);
+    }
+    *t0 = t1;
 }
