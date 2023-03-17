@@ -1,7 +1,6 @@
 use super::Game;
 
 pub fn do_step(game: &mut Game) {
-    // todo: optimize maybe by storing the number of alive neighbors that are still neighbors of the next cell
     for y in 0..game.rows() {
         for x in 0..game.cols() {
             let is_alive = game.world[y][x] == 1;
