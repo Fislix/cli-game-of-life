@@ -25,6 +25,10 @@ pub fn print_world(world: &[Vec<u8>]) {
 
 #[derive(Parser)]
 #[command(about = "Simulates Conway's Game of Life in the terminal.", long_about = None)]
+#[command(group(
+    clap::ArgGroup::new("duration")
+        .args(["seconds", "steps"])
+))]
 pub struct Cli {
     /// World width in number of characters
     pub width: u32,
@@ -39,4 +43,8 @@ pub struct Cli {
     /// How many seconds the game should run for
     #[arg(long)]
     pub seconds: Option<u32>,
+
+    /// How many simulation steps the game should run for
+    #[arg(long)]
+    pub steps: Option<u32>,
 }

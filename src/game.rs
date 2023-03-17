@@ -54,23 +54,29 @@ impl Game {
     }
 }
 
-pub fn get_stop_condition(seconds: Option<u32>) -> Box<dyn Fn() -> bool> {
-    match seconds {
-        Some(s) => {
+pub fn get_stop_condition(seconds: Option<u32>, steps: Option<u32>) -> Box<dyn Fn(u32) -> bool> {
+    match (seconds, steps) {
+        (Some(max_seconds), None) => {
             let now = Instant::now();
-            let ending_time = now + Duration::from_secs(s.into());
-            Box::new(move || Instant::now() > ending_time)
+            let ending_time = now + Duration::from_secs(max_seconds.into());
+            Box::new(move |_| Instant::now() > ending_time)
         }
-        None => Box::new(|| false),
+        (None, Some(max_steps)) => Box::new(move |steps: u32| steps >= max_steps),
+        (None, None) => Box::new(|_| false),
+        (Some(_), Some(_)) => {
+            panic!("Failed to restrict argument group: Got both \"seconds\" and \"steps\"")
+        }
     }
 }
 
-pub fn run(game: &mut Game, should_stop: Box<dyn Fn() -> bool>) {
-    while !should_stop() {
+pub fn run(game: &mut Game, should_stop: Box<dyn Fn(u32) -> bool>) {
+    let mut steps: u32 = 0;
+    while !should_stop(steps) {
         reset_console();
         print_world(&game.world);
         do_step(game);
         game.swap_world_and_buffer();
         std::thread::sleep(std::time::Duration::from_secs_f64(0.5));
+        steps += 1;
     }
 }
