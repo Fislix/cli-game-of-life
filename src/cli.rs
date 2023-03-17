@@ -35,4 +35,8 @@ pub struct Cli {
     /// What portion of the cells should be alive in the randomly generated world
     #[arg(short, long, default_value_t = 0.3)]
     pub portion_alive: f64,
+
+    /// How many seconds the game should run for
+    #[arg(long)]
+    pub seconds: Option<u32>,
 }
