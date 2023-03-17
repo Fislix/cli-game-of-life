@@ -1,9 +1,17 @@
-pub fn do_step(
-    current_world: &[Vec<u8>],
-    next_world: &mut [Vec<u8>],
-    rows: usize,
-    cols: usize,
-) {
+use rand::{thread_rng, Rng};
+
+pub fn generate_world(rows: usize, cols: usize, portion_alive: f64) -> Vec<Vec<u8>> {
+    let mut world = vec![Vec::<u8>::with_capacity(cols); rows];
+    for row in world.iter_mut() {
+        for _ in 0..cols {
+            row.push(thread_rng().gen_bool(portion_alive) as u8);
+        }
+    }
+
+    world
+}
+
+pub fn do_step(current_world: &[Vec<u8>], next_world: &mut [Vec<u8>], rows: usize, cols: usize) {
     // todo: optimize maybe by storing the number of alive neighbors that are still neighbors of the next cell
     for y in 0..rows {
         for x in 0..cols {

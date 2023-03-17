@@ -31,4 +31,8 @@ pub struct Cli {
 
     /// World height in number of lines
     pub height: u32,
+
+    /// What portion of the cells should be alive in the randomly generated world
+    #[arg(short, long, default_value_t = 0.3)]
+    pub portion_alive: f64,
 }
