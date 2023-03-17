@@ -1,4 +1,10 @@
+mod simulation_logic;
+
+use crate::cli::{print_world, reset_console};
 use rand::{thread_rng, Rng};
+use std::time::{Duration, Instant};
+
+pub use simulation_logic::do_step;
 
 pub fn generate_world(rows: usize, cols: usize, portion_alive: f64) -> Vec<Vec<u8>> {
     let mut world = vec![Vec::<u8>::with_capacity(cols); rows];
@@ -11,49 +17,29 @@ pub fn generate_world(rows: usize, cols: usize, portion_alive: f64) -> Vec<Vec<u
     world
 }
 
-pub fn do_step(current_world: &[Vec<u8>], next_world: &mut [Vec<u8>], rows: usize, cols: usize) {
-    // todo: optimize maybe by storing the number of alive neighbors that are still neighbors of the next cell
-    for y in 0..rows {
-        for x in 0..cols {
-            let is_alive = current_world[y][x] == 1;
-            let neighbors_alive = count_alive_neighbors(current_world, x, y, rows, cols);
-            next_world[y][x] = get_new_status(is_alive, neighbors_alive);
+pub fn get_stop_condition(seconds: Option<u32>) -> Box<dyn Fn() -> bool> {
+    match seconds {
+        Some(s) => {
+            let now = Instant::now();
+            let ending_time = now + Duration::from_secs(s.into());
+            Box::new(move || Instant::now() > ending_time)
         }
+        None => Box::new(|| false),
     }
 }
 
-fn count_alive_neighbors(world: &[Vec<u8>], x: usize, y: usize, rows: usize, cols: usize) -> u8 {
-    let mut n_alive = 0;
-    for (x, y) in get_neighbor_indices(x, y, rows, cols).iter() {
-        n_alive += world[*y][*x];
-    }
-
-    n_alive
-}
-
-fn get_neighbor_indices(x: usize, y: usize, rows: usize, cols: usize) -> [(usize, usize); 8] {
-    let x = x + cols;
-    let y = y + rows;
-
-    let indices = [
-        (x - 1, y - 1),
-        (x, y - 1),
-        (x + 1, y - 1),
-        (x - 1, y),
-        (x + 1, y),
-        (x - 1, y + 1),
-        (x, y + 1),
-        (x + 1, y + 1),
-    ];
-
-    indices.map(|(x, y)| (x % cols, y % rows))
-}
-
-fn get_new_status(is_alive: bool, neighbors_alive: u8) -> u8 {
-    match (is_alive, neighbors_alive) {
-        (true, 2..=3) => 1,
-        (false, 3) => 1,
-        (_, n @ 9..) => panic!("Invalid number of alive neighbors: {n}"),
-        _ => 0,
+pub fn run<'a>(
+    mut world: &'a mut [Vec<u8>],
+    mut buffer: &'a mut [Vec<u8>],
+    rows: usize,
+    cols: usize,
+    should_stop: Box<dyn Fn() -> bool>,
+) {
+    while !should_stop() {
+        reset_console();
+        print_world(world);
+        do_step(world, buffer, rows, cols);
+        (world, buffer) = (buffer, world);
+        std::thread::sleep(std::time::Duration::from_secs_f64(0.5));
     }
 }
