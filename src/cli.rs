@@ -42,11 +42,11 @@ pub struct Cli {
     #[arg(short, long, default_value_t = 0.3)]
     pub portion_alive: f64,
 
-    /// How many seconds the game should run for
+    /// How many seconds the game should run for (cannot be used with --steps)
     #[arg(long)]
     pub seconds: Option<u32>,
 
-    /// How many simulation steps the game should run for
+    /// How many simulation steps the game should run for (cannot be used with --seconds)
     #[arg(long)]
     pub steps: Option<u32>,
 
