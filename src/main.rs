@@ -7,7 +7,13 @@ fn main() {
     let mut game = Game::new(rows, cols, cli.portion_alive);
     let should_stop = get_stop_condition(cli.seconds, cli.steps);
 
-    run(&mut game, should_stop, cli.steps_per_second);
+    run(
+        &mut game,
+        should_stop,
+        cli.steps_per_second,
+        cli.char_alive,
+        cli.char_dead,
+    );
 
     reset_console();
 }

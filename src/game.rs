@@ -13,7 +13,10 @@ pub struct Board {
 
 impl Board {
     pub fn new(rows: usize, cols: usize) -> Board {
-        Board { board: vec![0; rows * cols], cols }
+        Board {
+            board: vec![0; rows * cols],
+            cols,
+        }
     }
 
     pub fn get(&self, x: usize, y: usize) -> u8 {
@@ -84,7 +87,13 @@ pub fn get_stop_condition(seconds: Option<u32>, steps: Option<u32>) -> Box<dyn F
     }
 }
 
-pub fn run(game: &mut Game, should_stop: Box<dyn Fn(u32) -> bool>, steps_per_second: f64) {
+pub fn run(
+    game: &mut Game,
+    should_stop: Box<dyn Fn(u32) -> bool>,
+    steps_per_second: f64,
+    char_alive: char,
+    char_dead: char,
+) {
     let mut steps: u32 = 0;
 
     let time_step = Duration::from_secs_f64(1.0 / steps_per_second);
@@ -92,7 +101,7 @@ pub fn run(game: &mut Game, should_stop: Box<dyn Fn(u32) -> bool>, steps_per_sec
 
     while !should_stop(steps) {
         reset_console();
-        print_world(game);
+        print_world(game, char_alive, char_dead);
         do_step(game);
         game.swap_world_and_buffer();
 

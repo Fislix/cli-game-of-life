@@ -5,7 +5,8 @@ pub fn do_step(game: &mut Game) {
         for x in 0..game.cols() {
             let is_alive = game.world.get(x, y) == 1;
             let neighbors_alive = count_alive_neighbors(game, x, y);
-            game.buffer.set(x, y, get_new_status(is_alive, neighbors_alive));
+            game.buffer
+                .set(x, y, get_new_status(is_alive, neighbors_alive));
         }
     }
 }

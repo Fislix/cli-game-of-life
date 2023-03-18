@@ -9,14 +9,14 @@ pub fn reset_console() {
     print!("{ANSI_CLEAR_CONSOLE}{ANSI_CURSOR_TO_START}");
 }
 
-pub fn print_world(game: &Game) {
+pub fn print_world(game: &Game, char_alive: char, char_dead: char) {
     for y in 0..game.rows() {
         for x in 0..game.cols() {
             print!(
                 "{} ",
                 match game.world.get(x, y) {
-                    0 => " ",
-                    1 => "■",
+                    0 => char_dead,
+                    1 => char_alive,
                     n => panic!("Invalid cell value: {}", n),
                 }
             );
@@ -53,4 +53,12 @@ pub struct Cli {
     /// How many steps per second should (tried to) be computed
     #[arg(short, long = "speed", default_value_t = 2.0)]
     pub steps_per_second: f64,
+
+    /// The character to print for a living cell
+    #[arg(long, default_value_t = '■')]
+    pub char_alive: char,
+
+    /// The character to print for a dead cell
+    #[arg(long, default_value_t = ' ')]
+    pub char_dead: char,
 }
