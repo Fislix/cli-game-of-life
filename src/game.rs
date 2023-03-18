@@ -84,10 +84,10 @@ pub fn get_stop_condition(seconds: Option<u32>, steps: Option<u32>) -> Box<dyn F
     }
 }
 
-pub fn run(game: &mut Game, should_stop: Box<dyn Fn(u32) -> bool>, steps_per_second: u32) {
+pub fn run(game: &mut Game, should_stop: Box<dyn Fn(u32) -> bool>, steps_per_second: f64) {
     let mut steps: u32 = 0;
 
-    let time_step = Duration::from_secs_f64(1.0 / steps_per_second as f64);
+    let time_step = Duration::from_secs_f64(1.0 / steps_per_second);
     let mut t0 = Instant::now();
 
     while !should_stop(steps) {

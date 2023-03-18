@@ -51,6 +51,6 @@ pub struct Cli {
     pub steps: Option<u32>,
 
     /// How many steps per second should (tried to) be computed
-    #[arg(short, long = "speed", default_value_t = 2)]
-    pub steps_per_second: u32,
+    #[arg(short, long = "speed", default_value_t = 2.0)]
+    pub steps_per_second: f64,
 }
