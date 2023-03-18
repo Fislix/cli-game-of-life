@@ -3,9 +3,9 @@ use super::Game;
 pub fn do_step(game: &mut Game) {
     for y in 0..game.rows() {
         for x in 0..game.cols() {
-            let is_alive = game.world[y][x] == 1;
+            let is_alive = game.world.get(x, y) == 1;
             let neighbors_alive = count_alive_neighbors(game, x, y);
-            game.buffer[y][x] = get_new_status(is_alive, neighbors_alive);
+            game.buffer.set(x, y, get_new_status(is_alive, neighbors_alive));
         }
     }
 }
@@ -13,7 +13,7 @@ pub fn do_step(game: &mut Game) {
 fn count_alive_neighbors(game: &Game, x: usize, y: usize) -> u8 {
     let mut n_alive = 0;
     for (x, y) in get_neighbor_indices(game, x, y).iter() {
-        n_alive += game.world[*y][*x];
+        n_alive += game.world.get(*x, *y);
     }
 
     n_alive

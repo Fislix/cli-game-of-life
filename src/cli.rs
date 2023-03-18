@@ -1,3 +1,5 @@
+use crate::game::Game;
+
 pub use clap::Parser;
 
 const ANSI_CLEAR_CONSOLE: &str = "\x1b[2J";
@@ -7,12 +9,12 @@ pub fn reset_console() {
     print!("{ANSI_CLEAR_CONSOLE}{ANSI_CURSOR_TO_START}");
 }
 
-pub fn print_world(world: &[Vec<u8>]) {
-    for row in world.iter() {
-        for cell in row {
+pub fn print_world(game: &Game) {
+    for y in 0..game.rows() {
+        for x in 0..game.cols() {
             print!(
                 "{} ",
-                match cell {
+                match game.world.get(x, y) {
                     0 => " ",
                     1 => "■",
                     n => panic!("Invalid cell value: {}", n),

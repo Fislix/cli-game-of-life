@@ -6,17 +6,43 @@ use std::time::{Duration, Instant};
 
 pub use simulation_logic::do_step;
 
+pub struct Board {
+    board: Vec<u8>,
+    cols: usize,
+}
+
+impl Board {
+    pub fn new(rows: usize, cols: usize) -> Board {
+        Board { board: vec![0; rows * cols], cols }
+    }
+
+    pub fn get(&self, x: usize, y: usize) -> u8 {
+        self.board[y * self.cols + x]
+    }
+
+    pub fn set(&mut self, x: usize, y: usize, value: u8) {
+        self.board[y * self.cols + x] = value;
+    }
+
+    pub fn fill_random(&mut self, portion_alive: f64) {
+        for i in 0..self.board.len() {
+            self.board[i] = thread_rng().gen_bool(portion_alive) as u8;
+        }
+    }
+}
+
 pub struct Game {
-    pub world: Vec<Vec<u8>>,
-    pub buffer: Vec<Vec<u8>>,
+    pub world: Board,
+    pub buffer: Board,
     rows: usize,
     cols: usize,
 }
 
 impl Game {
     pub fn new(rows: usize, cols: usize, portion_alive: f64) -> Game {
-        let world = Game::generate_world(rows, cols, portion_alive);
-        let buffer: Vec<Vec<u8>> = vec![vec![0; cols]; rows];
+        let mut world = Board::new(rows, cols);
+        world.fill_random(portion_alive);
+        let buffer = Board::new(rows, cols);
 
         Game {
             world,
@@ -40,17 +66,6 @@ impl Game {
 
     pub fn swap_world_and_buffer(&mut self) {
         std::mem::swap(&mut self.world, &mut self.buffer);
-    }
-
-    fn generate_world(rows: usize, cols: usize, portion_alive: f64) -> Vec<Vec<u8>> {
-        let mut world = vec![Vec::<u8>::with_capacity(cols); rows];
-        for row in world.iter_mut() {
-            for _ in 0..cols {
-                row.push(thread_rng().gen_bool(portion_alive) as u8);
-            }
-        }
-
-        world
     }
 }
 
@@ -77,7 +92,7 @@ pub fn run(game: &mut Game, should_stop: Box<dyn Fn(u32) -> bool>, steps_per_sec
 
     while !should_stop(steps) {
         reset_console();
-        print_world(&game.world);
+        print_world(game);
         do_step(game);
         game.swap_world_and_buffer();
 
