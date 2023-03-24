@@ -19,6 +19,10 @@ impl Board {
         }
     }
 
+    pub fn from_starting_data(data: Vec<u8>, cols: usize) -> Board {
+        Board { board: data, cols }
+    }
+
     pub fn get(&self, x: usize, y: usize) -> u8 {
         self.board[y * self.cols + x]
     }
@@ -45,6 +49,18 @@ impl Game {
     pub fn new(rows: usize, cols: usize, portion_alive: f64) -> Game {
         let mut world = Board::new(rows, cols);
         world.fill_random(portion_alive);
+        let buffer = Board::new(rows, cols);
+
+        Game {
+            world,
+            buffer,
+            rows,
+            cols,
+        }
+    }
+
+    pub fn from_starting_data(data: Vec<u8>, rows: usize, cols: usize) -> Game {
+        let world = Board::from_starting_data(data, cols);
         let buffer = Board::new(rows, cols);
 
         Game {

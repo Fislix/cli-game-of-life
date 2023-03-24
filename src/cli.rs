@@ -31,12 +31,20 @@ pub fn print_world(game: &Game, char_alive: char, char_dead: char) {
     clap::ArgGroup::new("duration")
         .args(["seconds", "steps"])
 ))]
+#[command(group(
+    clap::ArgGroup::new("random_initialization")
+        .args(["width", "height", "portion_alive"])
+        .multiple(true)
+        .conflicts_with("file")
+))]
 pub struct Cli {
-    /// World width in number of characters
-    pub width: u32,
+    /// World width in number of characters. Required if <FILE> is not used
+    #[arg(short = 'W', long)]
+    pub width: Option<u32>,
 
-    /// World height in number of lines
-    pub height: u32,
+    /// World height in number of lines. Required if <FILE> is not used
+    #[arg(short = 'H', long)]
+    pub height: Option<u32>,
 
     /// What portion of the cells should be alive in the randomly generated world
     #[arg(short, long, default_value_t = 0.3)]
@@ -61,4 +69,8 @@ pub struct Cli {
     /// The character to print for a dead cell
     #[arg(long, default_value_t = ' ')]
     pub char_dead: char,
+
+    /// Path to a text file, containing a starting state described by an n x m grid of 0s (dead cells) and 1s (living cells). Required if <WIDTH> and <HEIGHT> are not used
+    #[arg(short, long)]
+    pub file: Option<String>,
 }
