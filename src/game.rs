@@ -116,5 +116,5 @@ fn enforce_speed(t0: &mut Instant, time_step: Duration) {
     if delta_t < time_step {
         std::thread::sleep(time_step - delta_t);
     }
-    *t0 = t1;
+    *t0 = Instant::now();
 }
