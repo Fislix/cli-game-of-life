@@ -1,6 +1,6 @@
 mod simulation_logic;
 
-use crate::{cli::{print_world, reset_console}, file_input::FileData};
+use crate::cli::{print_world, reset_console};
 use rand::{thread_rng, Rng};
 use std::time::{Duration, Instant};
 
@@ -59,9 +59,7 @@ impl Game {
         }
     }
 
-    pub fn from_starting_data(file_data: FileData) -> Game {
-        let (data, rows, cols) = (file_data.data, file_data.rows, file_data.cols);
-
+    pub fn from_starting_data(data: Vec<u8>, rows: usize, cols: usize) -> Game {
         let world = Board::from_starting_data(data, cols);
         let buffer = Board::new(rows, cols);
 
